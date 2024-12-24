@@ -109,35 +109,42 @@ def color_print_diffs(differences):
 
 def table_print_diffs(differences):
     """
-    Print differences in tabular form for better readability.
+    Print a simplified, Excel-style table view with columns:
+    Path, Old Value, New Value, Similarity, and Status.
     """
-    table_data = []
+    # Prepare table headers
+    table_data = [
+        ["Path", "Old Value", "New Value", "Similarity", "Status"]
+    ]
 
-    # Structural diffs
-    if differences["structural_diff"]:
-        table_data.append(["Structural Differences", "---", "---"])
-        for diff_type, details in differences["structural_diff"].items():
-            table_data.append([diff_type, str(details), "Structural difference"])
-    else:
-        table_data.append(["Structural Differences", "None", "No difference"])
+    structural_diff = differences.get("structural_diff", {})
+    semantic_diff = differences.get("semantic_diff", {})
 
-    # Semantic diffs
-    if differences["semantic_diff"]:
-        table_data.append(["Semantic Differences", "---", "---"])
-        for path, info in differences["semantic_diff"].items():
-            similarity = info["similarity"]
-            status = info["status"]
-            old_value = info["old_value"]
-            new_value = info["new_value"]
+    # 1. Structural Differences
+    # If there is a 'values_changed' block, show each entry as a row
+    if "values_changed" in structural_diff:
+        for path, change_info in structural_diff["values_changed"].items():
+            old_val = change_info.get("old_value", "")
+            new_val = change_info.get("new_value", "")
+            # Structural differences have no similarity measure
+            table_data.append([path, old_val, new_val, "-", "Structural difference"])
 
-            # Create a concise explanation
-            explanation = f"{status}, sim={similarity:.2f}"
-            diff_display = f"Old: {old_value} -> New: {new_value}"
-            table_data.append([path, diff_display, explanation])
-    else:
-        table_data.append(["Semantic Differences", "None", "No difference"])
+    # 2. Semantic Differences
+    # Display each path, old value, new value, similarity, and status
+    for path, info in semantic_diff.items():
+        old_val = info.get("old_value", "")
+        new_val = info.get("new_value", "")
+        similarity = f"{info['similarity']:.2f}"
+        status = info["status"]
+        table_data.append([path, old_val, new_val, similarity, status])
 
-    print(tabulate(table_data, headers=["Key/Section", "Value/Score", "Explanation"], tablefmt="fancy_grid"))
+    # 3. If no structural or semantic diffs, indicate none
+    if len(table_data) == 1:
+        table_data.append(["None", "-", "-", "-", "No differences found"])
+
+    # Print table in a simple format
+    # You can switch to "pretty", "simple", or another style if desired
+    print(tabulate(table_data, headers="firstrow", tablefmt="simple"))
 
 
 def main():
