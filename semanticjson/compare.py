@@ -111,26 +111,29 @@ def table_print_diffs(differences):
     """
     Print a simplified, Excel-style table view with columns:
     Path, Old Value, New Value, Similarity, and Status.
+
+    This version skips printing a separate structural row
+    for paths that also have semantic differences.
     """
-    # Prepare table headers
+    structural_diff = differences.get("structural_diff", {})
+    semantic_diff = differences.get("semantic_diff", {})
+
     table_data = [
         ["Path", "Old Value", "New Value", "Similarity", "Status"]
     ]
 
-    structural_diff = differences.get("structural_diff", {})
-    semantic_diff = differences.get("semantic_diff", {})
-
-    # 1. Structural Differences
-    # If there is a 'values_changed' block, show each entry as a row
+    # 1. Print structural diffs only if they are not in the semantic diff
     if "values_changed" in structural_diff:
         for path, change_info in structural_diff["values_changed"].items():
+            if path in semantic_diff:
+                # Skip, because we'll show it in semantic section
+                continue
             old_val = change_info.get("old_value", "")
             new_val = change_info.get("new_value", "")
-            # Structural differences have no similarity measure
             table_data.append([path, old_val, new_val, "-", "Structural difference"])
 
-    # 2. Semantic Differences
-    # Display each path, old value, new value, similarity, and status
+    # 2. Print semantic diffs
+    #    (includes both "Equivalent" and "Changed" entries)
     for path, info in semantic_diff.items():
         old_val = info.get("old_value", "")
         new_val = info.get("new_value", "")
@@ -138,12 +141,10 @@ def table_print_diffs(differences):
         status = info["status"]
         table_data.append([path, old_val, new_val, similarity, status])
 
-    # 3. If no structural or semantic diffs, indicate none
+    # 3. If no rows beyond header, print a "no differences" entry
     if len(table_data) == 1:
         table_data.append(["None", "-", "-", "-", "No differences found"])
 
-    # Print table in a simple format
-    # You can switch to "pretty", "simple", or another style if desired
     print(tabulate(table_data, headers="firstrow", tablefmt="simple"))
 
 
