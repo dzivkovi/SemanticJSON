@@ -1,0 +1,29 @@
+{
+    "input_data": [
+        {
+            "business_name": "MCDONALDS CORPORATION",
+            "merchant_name": "MCDONALDS",
+            "uuid": "0"
+        },
+        {
+            "business_name": "LORETTA Inc",
+            "merchant_name": "LORETTA",
+            "uuid": "1"
+        },
+        {
+            "business_name": "BOLEN CHIROPRACTIC PA Corporation",
+            "merchant_name": "BOLEN CHIROPRACTIC PA",
+            "uuid": "2"
+        },
+        {
+            "business_name": "WAL-MART STORES, INC.",
+            "merchant_name": "WAL-MART",
+            "uuid": "3"
+        },
+        {
+            "business_name": "T-MOBILE USA, INC.",
+            "merchant_name": "MOBILE",
+            "uuid": "4"
+        }
+    ]
+}

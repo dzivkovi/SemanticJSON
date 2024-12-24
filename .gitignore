@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+data/todo/*
+data/done/*
+data/validated/*
+!data/todo/.gitkeep
+!data/done/.gitkeep
+!data/validated/.gitkeep
